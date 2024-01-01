@@ -1,5 +1,5 @@
 # If Tcl/Tk already have required treectrl package, then prepare dummy wrapper,
-# otherwise do wrapper which wraps around Tix tcl/tk module.
+# otherwise do wrapper which wraps around BLT tcl/tk module.
 
 use strict;
 use Getopt::Long;
@@ -116,26 +116,26 @@ else {
     # read tcl compile options
     my $DEFS = "$defs -DUSE_TCL_STUBS=1 -DUSE_TK_STUBS=1"=~y/\\//dr;
 print STDERR "(tcl_incspec,tcl_libspec,tk_libspec)=($tcl_incspec, $tcl_libspec, $tk_libspec)\n";
-    open my $fh_out, ">Tix.pm";
+    open my $fh_out, ">BLT.pm";
     print $fh_out <<'EOS';
-package Tcl::Tk::Tkwidget::Tix;
+package Tcl::Tk::Tkwidget::BLT;
 require DynaLoader;
 our @ISA = qw(DynaLoader);
 __PACKAGE__->bootstrap;
 
-# happen to NOT have the required Tix widget
+# happen to NOT have the required BLT widget
 sub init {
     my $int = shift;
-    $INC{'Tcl/Tk/Tkwidget/Tix.pm'} =~ /^(.*)\// or die "?";
+    $INC{'Tcl/Tk/Tkwidget/BLT.pm'} =~ /^(.*)\// or die "?";
     $int->SetVar('::treectrl_library',"$1/../library");
-    Tcl::Tk::Tkwidget::Tix::Tix_Init($int);
+    Tcl::Tk::Tkwidget::BLT::BLT_Init($int);
 }
 1;
 EOS
     close $fh_out;
     if ($write_makefile) {
 	WriteMakefile(
-	    NAME => "Tcl::Tk::Tkwidget::Tix",
+	    NAME => "Tcl::Tk::Tkwidget::BLT",
 	    LICENSE => 'perl',
 	    MIN_PERL_VERSION => '5.006',
 	    META_MERGE => {
@@ -143,12 +143,12 @@ EOS
 		resources => {
 		    repository => {
 			type => 'git',
-			web => 'https://github.com/vadrer/tix',
-			url => 'https://github.com/vadrer/tix',
+			web => 'https://github.com/vadrer/blt',
+			url => 'https://github.com/vadrer/blt',
 		    },
 		    MailingList => 'mailto:tcltk@perl.org',
 		},
-		keywords => [qw(Tk Tcl/Tk Tix GUI)],
+		keywords => [qw(Tk Tcl/Tk BLT GUI)],
 	    },
 	    PREREQ_PM => {
 		'Tcl::Tk' => 1.0,
